@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Room - Gleba Minador | Da Mata Energia Sustentável</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out;
+    }
+    .document-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .document-card {
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-50">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Icon Components
+    const Icon = ({ children, className = "", size = 24, ...props }) => (
+      <svg 
+        className={className}
+        width={size} 
+        height={size} 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        {...props}
+      >
+        {children}
+      </svg>
+    );
+
+    const FileText = (props) => (
+      <Icon {...props}>
+        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+        <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+        <path d="M10 9H8" />
+        <path d="M16 13H8" />
+        <path d="M16 17H8" />
+      </Icon>
+    );
+
+    const Download = (props) => (
+      <Icon {...props}>
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </Icon>
+    );
+
+    const MapPin = (props) => (
+      <Icon {...props}>
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+        <circle cx="12" cy="10" r="3" />
+      </Icon>
+    );
+
+    const Database = (props) => (
+      <Icon {...props}>
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+      </Icon>
+    );
+
+    const Zap = (props) => (
+      <Icon {...props}>
+        <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 14 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 10 14z" />
+      </Icon>
+    );
+
+    const Sun = (props) => (
+      <Icon {...props}>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2" />
+        <path d="M12 20v2" />
+        <path d="m4.93 4.93 1.41 1.41" />
+        <path d="m17.66 17.66 1.41 1.41" />
+        <path d="M2 12h2" />
+        <path d="M20 12h2" />
+        <path d="m6.34 17.66-1.41 1.41" />
+        <path d="m19.07 4.93-1.41 1.41" />
+      </Icon>
+    );
+
+    const Wind = (props) => (
+      <Icon {...props}>
+        <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />
+        <path d="M9.6 4.6A2 2 0 1 1 11 8H2" />
+        <path d="M12.6 19.4A2 2 0 1 0 14 16H2" />
+      </Icon>
+    );
+
+    const Layers = (props) => (
+      <Icon {...props}>
+        <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+        <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+        <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+      </Icon>
+    );
+
+    const BarChart3 = (props) => (
+      <Icon {...props}>
+        <path d="M3 3v18h18" />
+        <path d="M18 17V9" />
+        <path d="M13 17V5" />
+        <path d="M8 17v-3" />
+      </Icon>
+    );
+
+    const Shield = (props) => (
+      <Icon {...props}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </Icon>
+    );
+
+    const ChevronRight = (props) => (
+      <Icon {...props}>
+        <polyline points="9 18 15 12 9 6" />
+      </Icon>
+    );
+
+    const Mail = (props) => (
+      <Icon {...props}>
+        <rect width="20" height="16" x="2" y="4" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </Icon>
+    );
+
+    const Phone = (props) => (
+      <Icon {...props}>
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+      </Icon>
+    );
+
+    // Documentos do Data Room
+    const documents = [
+      {
+        id: 'relatorio-tecnico',
+        title: 'Relatório Técnico de Recursos Energéticos',
+        category: 'Técnico',
+        description: 'Análise completa de recursos solares, eólicos e híbridos. Dados validados por ERA5, LABREN, INMET e NASA POWER.',
+        icon: FileText,
+        color: 'blue',
+        sections: [
+          'Resumo Executivo',
+          'Dados de Entrada e Metodologia',
+          'Irradiação Solar',
+          'Recurso Eólico',
+          'Complementariedade Solar-Eólica',
+          'Parâmetros Climáticos',
+          'Geração e Receita Estimada',
+          'Fontes de Dados e Limitações',
+          'Conclusões e Recomendações'
+        ],
+        file: 'relatorio-recursos-lagoa-barro.md'
+      },
+      {
+        id: 'documentacao-fundiaria',
+        title: 'Documentação Fundiária',
+        category: 'Legal',
+        description: 'Certidão de Inteiro Teor - Matrícula nº 19.716. Área de 103,49 hectares regularizada.',
+        icon: Shield,
+        color: 'green',
+        details: {
+          'Matrícula': '19.716',
+          'Área Total': '103,49 hectares',
+          'Cartório': 'São João do Piauí',
+          'Data Averbação': '08/05/2014',
+          'Coordenadas': '-9.406453° S, -41.584003° O',
+          'Zona UTM': '24S'
+        }
+      },
+      {
+        id: 'dados-solar',
+        title: 'Dados de Irradiação Solar',
+        category: 'Técnico',
+        description: 'GHI médio anual: 5,72 kWh/m²/dia (2.088 kWh/m²/ano). Fator de capacidade: 18-24%.',
+        icon: Sun,
+        color: 'yellow',
+        metrics: {
+          'GHI Médio Anual': '5,72 kWh/m²/dia',
+          'GHI Anual Total': '2.088 kWh/m²/ano',
+          'Fator de Capacidade': '18-24%',
+          'Sazonalidade': '±24% (baixa variabilidade)',
+          'Fonte': 'Atlas ABES (LABREN/INPE) - 17 anos'
+        }
+      },
+      {
+        id: 'dados-eolico',
+        title: 'Dados de Recurso Eólico',
+        category: 'Técnico',
+        description: 'Velocidade média a 100m: 6,7 m/s. Fator de capacidade: 38-48%. Validado por Lagoa dos Ventos.',
+        icon: Wind,
+        color: 'green',
+        metrics: {
+          'Velocidade Média (100m)': '6,7 m/s',
+          'Fator de Capacidade': '38-48%',
+          'Validação': 'Lagoa dos Ventos (FC 35-36%)',
+          'Distância Validação': '~15 km',
+          'Fonte': 'ERA5 Copernicus - 24 anos'
+        }
+      },
+      {
+        id: 'analise-hibrida',
+        title: 'Análise de Complementariedade',
+        category: 'Técnico',
+        description: 'Modelo híbrido recomendado: 200 MW solar + 200 MW eólico. Variabilidade reduzida em 49%.',
+        icon: Layers,
+        color: 'purple',
+        metrics: {
+          'Configuração Recomendada': '200 MW Solar + 200 MW Eólico',
+          'Geração Anual': '546 GWh/ano',
+          'Fator de Capacidade': '31,5%',
+          'Redução Variabilidade': '-49% vs eólico isolado',
+          'Receita Estimada': 'R$ 82-109 milhões/ano'
+        }
+      },
+      {
+        id: 'dados-climaticos',
+        title: 'Parâmetros Climáticos',
+        category: 'Técnico',
+        description: 'Temperatura média: 27,5°C. Precipitação: 750 mm/ano. Declividade: 1-3%.',
+        icon: Database,
+        color: 'indigo',
+        metrics: {
+          'Temperatura Média': '27,5°C',
+          'Precipitação Anual': '750 mm',
+          'Dias com Chuva': '90 dias/ano',
+          'Altitude': '~180 m (NMM)',
+          'Declividade': '1-3%'
+        }
+      },
+      {
+        id: 'projecoes-financeiras',
+        title: 'Projeções Financeiras',
+        category: 'Financeiro',
+        description: 'Receita bruta estimada baseada em PLD médio de R$ 175/MWh. Análise de sensibilidade incluída.',
+        icon: BarChart3,
+        color: 'emerald',
+        scenarios: {
+          'Solar (300 MW)': 'R$ 82,7 - 110,3 milhões/ano',
+          'Eólico (200 MW)': 'R$ 110,4 - 147,3 milhões/ano',
+          'Híbrido (400 MW)': 'R$ 81,9 - 109,2 milhões/ano'
+        }
+      },
+      {
+        id: 'infraestrutura',
+        title: 'Infraestrutura e Cluster',
+        category: 'Técnico',
+        description: 'Cluster de 2 GW outorgados. SE Lagoa do Barro (138 kV) e SE Queimada Nova II (500 kV).',
+        icon: Zap,
+        color: 'orange',
+        details: {
+          'Potência Outorgada': '2.008 MW',
+          'Potência Fiscalizada': '689 MW',
+          'SE Local': 'Lagoa do Barro (138 kV)',
+          'SE Rede Básica': 'Queimada Nova II (500 kV)',
+          'Distância SE': '~20-30 km'
+        }
+      }
+    ];
+
+    const DocumentCard = ({ doc, onView }) => {
+      const IconComponent = doc.icon;
+      return (
+        <div 
+          className="document-card bg-white rounded-xl shadow-md border border-slate-200 p-6 cursor-pointer animate-fade-in"
+          onClick={() => onView(doc)}
+        >
+          <div className={`w-12 h-12 rounded-lg bg-${doc.color}-100 flex items-center justify-center mb-4`}>
+            <IconComponent className={`w-6 h-6 text-${doc.color}-600`} />
+          </div>
+          <div className="mb-2">
+            <span className={`text-xs font-semibold text-${doc.color}-600 uppercase tracking-wide`}>
+              {doc.category}
+            </span>
+          </div>
+          <h3 className="text-lg font-bold text-slate-800 mb-2">{doc.title}</h3>
+          <p className="text-sm text-slate-600 mb-4 line-clamp-2">{doc.description}</p>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500">Ver detalhes</span>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </div>
+        </div>
+      );
+    };
+
+    const DocumentDetail = ({ doc, onBack }) => {
+      const IconComponent = doc.icon;
+      return (
+        <div className="animate-fade-in">
+          <button 
+            onClick={onBack}
+            className="mb-6 text-slate-600 hover:text-slate-800 flex items-center"
+          >
+            <ChevronRight className="w-5 h-5 mr-2 rotate-180" />
+            Voltar ao Data Room
+          </button>
+
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+            <div className="flex items-start mb-6">
+              <div className={`w-16 h-16 rounded-xl bg-${doc.color}-100 flex items-center justify-center mr-4`}>
+                <IconComponent className={`w-8 h-8 text-${doc.color}-600`} />
+              </div>
+              <div className="flex-1">
+                <span className={`text-xs font-semibold text-${doc.color}-600 uppercase tracking-wide`}>
+                  {doc.category}
+                </span>
+                <h2 className="text-3xl font-bold text-slate-800 mt-1">{doc.title}</h2>
+                <p className="text-slate-600 mt-2">{doc.description}</p>
+              </div>
+            </div>
+
+            {doc.sections && (
+              <div className="mt-8 border-t border-slate-200 pt-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Seções do Documento</h3>
+                <ul className="space-y-2">
+                  {doc.sections.map((section, idx) => (
+                    <li key={idx} className="flex items-center text-slate-700">
+                      <ChevronRight className="w-4 h-4 mr-2 text-slate-400" />
+                      {section}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-sm text-slate-600 mb-2">
+                    <strong>Arquivo:</strong> {doc.file || 'Documento disponível sob solicitação'}
+                  </p>
+                  <button className="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center">
+                    <Download className="w-4 h-4 mr-2" />
+                    Solicitar Acesso Completo
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {doc.metrics && (
+              <div className="mt-8 border-t border-slate-200 pt-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Métricas Principais</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {Object.entries(doc.metrics).map(([key, value], idx) => (
+                    <div key={idx} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <p className="text-xs text-slate-500 uppercase font-semibold mb-1">{key}</p>
+                      <p className="text-lg font-bold text-slate-800">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {doc.details && (
+              <div className="mt-8 border-t border-slate-200 pt-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Detalhes</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {Object.entries(doc.details).map(([key, value], idx) => (
+                    <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
+                      <span className="text-sm text-slate-600">{key}</span>
+                      <span className="text-sm font-semibold text-slate-800">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {doc.scenarios && (
+              <div className="mt-8 border-t border-slate-200 pt-6">
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Cenários de Receita</h3>
+                <div className="space-y-3">
+                  {Object.entries(doc.scenarios).map(([scenario, revenue], idx) => (
+                    <div key={idx} className="p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg border border-emerald-200">
+                      <p className="font-semibold text-slate-800">{scenario}</p>
+                      <p className="text-lg font-bold text-emerald-700 mt-1">{revenue}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [selectedDoc, setSelectedDoc] = useState(null);
+      const [searchTerm, setSearchTerm] = useState('');
+
+      const filteredDocs = documents.filter(doc => 
+        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        doc.category.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return (
+        <div className="min-h-screen bg-slate-50">
+          {/* Header */}
+          <header className="bg-gradient-to-r from-emerald-900 via-green-800 to-slate-900 text-white shadow-lg">
+            <div className="max-w-7xl mx-auto px-6 py-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">Data Room</h1>
+                  <p className="text-green-200">Gleba "Minador" - Lagoa do Barro, Piauí</p>
+                  <p className="text-sm text-green-300 mt-1">Documentação técnica e fundiária completa</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-green-200">Da Mata Energia Sustentável</p>
+                  <p className="text-xs text-green-300 mt-1">Dezembro 2025</p>
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-6 py-12">
+            {!selectedDoc ? (
+              <>
+                {/* Search Bar */}
+                <div className="mb-8">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Buscar documentos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full px-6 py-4 pl-12 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                    />
+                    <Database className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                  <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Total de Documentos</p>
+                    <p className="text-3xl font-bold text-slate-800">{documents.length}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Área Total</p>
+                    <p className="text-3xl font-bold text-slate-800">103,49 ha</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Potencial Total</p>
+                    <p className="text-3xl font-bold text-slate-800">400 MW</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Geração Anual</p>
+                    <p className="text-3xl font-bold text-slate-800">546 GWh</p>
+                  </div>
+                </div>
+
+                {/* Documents Grid */}
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-6">
+                    Documentos Disponíveis ({filteredDocs.length})
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredDocs.map(doc => (
+                      <DocumentCard 
+                        key={doc.id} 
+                        doc={doc} 
+                        onView={setSelectedDoc}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <DocumentDetail doc={selectedDoc} onBack={() => setSelectedDoc(null)} />
+            )}
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-slate-900 text-white mt-16">
+            <div className="max-w-7xl mx-auto px-6 py-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-lg font-bold mb-4">Contato</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <Mail className="w-5 h-5 mr-3 text-green-400" />
+                      <span>vitordamatavaz@gmail.com</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Phone className="w-5 h-5 mr-3 text-green-400" />
+                      <span>+55 (11) 98343-7846</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold mb-4">Informações Legais</h3>
+                  <p className="text-sm text-slate-400">
+                    Este Data Room contém informações confidenciais destinadas exclusivamente a investidores qualificados e desenvolvedoras de energia renovável. 
+                    O uso não autorizado é proibido.
+                  </p>
+                  <p className="text-xs text-slate-500 mt-4">
+                    Documentos gerados em Dezembro 2025 | Validade: 24 meses
+                  </p>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
+
